@@ -1,0 +1,30 @@
+version: '3'
+
+services: 
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    image: flask-app:latest
+    container_name: flask-app
+    ports:
+      - 5000:5000
+    volumes:
+      - ./app:/app
+    command: /bin/bash
+    tty: true
+
+  db:
+    image: postgres:latest
+    container_name: flask-db
+    environment:
+      POSTGRES_DB: flaskdb
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbuser
+    ports:
+      - 5433:5432
+    volumes:
+      - flaskdb_data:/var/lib/postgresql/data
+volumes:
+  flaskdb_data:
+    external: true
