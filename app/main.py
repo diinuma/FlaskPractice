@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 import psycopg2 as pg
-import psycopg2.extras
+from psycopg2.extras import DictCursor 
 
 app = Flask(__name__)
 
@@ -16,7 +16,7 @@ DATABASE = {
 @app.route('/')
 def todo_list():
     with pg.connect(**DATABASE) as connection, \
-         connection.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+         connection.cursor(cursor_factory=DictCursor) as cursor:
         sql = """
             select * from todo
         """
@@ -51,7 +51,7 @@ def add():
 @app.route('/edit/<id>')
 def todo_edit(id=None):
     with pg.connect(**DATABASE) as connection, \
-        connection.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+        connection.cursor(cursor_factory=DictCursor) as cursor:
         sql = """
             select * 
             from todo
@@ -61,9 +61,9 @@ def todo_edit(id=None):
             'id':id
         }
         cursor.execute(sql, params)
-        todos = cursor.fetchall()
-    print(todos)
-    return render_template('edit.html', title='TODOアプリ', todos=todos)
+        todo = cursor.fetchone()
+    
+    return render_template('edit.html', title='TODOアプリ', todo=todo)
 
 @app.route('/edit', methods=['POST'])
 def edit():
@@ -86,10 +86,12 @@ def edit():
 
     return redirect(url_for('todo_list'))
 
-@app.route('/<id>', methods=['POST'])
+@app.route('/', methods=['POST'])
 def delete(id=None):
     with pg.connect(**DATABASE) as connection, \
          connection.cursor() as cursor:
+
+        id = request.form['id']
 
         sql = """
             delete from todo

@@ -1,16 +1,27 @@
 {% extends "layout.html" %}
+{% block head %}
+<script type="text/javascript">
+    function destroy(id){
+       dummy.id.value = id;
+       dummy.submit();
+    }
+</script>
+{% endblock %}
 {% block content %}
 <h1>TODOリスト</h1>
 <table>
     {% for todo in todos %}
     <tr>
-        <td>{{ todo["todo"] }}</td>
+    <td>{{ todo["todo"] }}</td>
     <td><button onclick="location.href='/edit/{{ todo['id'] }}'">編集</button> </td>
-    <td><form action="/{{ todo['id'] }}", method="POST"><button onclick="this.form.submit()">削除</button></form></td>
+    <td><button onclick="destroy({{ todo['id']}});">削除</button></td>
     </tr>
     {% endfor %}
 </table>
 
 <button onclick="location.href='/add'">新規登録</button>
 
+<form name="dummy" action="/" method="POST">
+    <input type="hidden" name=id />
+</form>
 {% endblock %}

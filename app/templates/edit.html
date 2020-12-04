@@ -2,8 +2,8 @@
 {% block content %}
 <h1>編集</h1>
 <form action="/edit" method="POST">
-    <input type="hidden" name="id" value="{{ todos[0]['id'] }}" />
-    <input type="text" name="todo" value="{{ todos[0]['todo'] }}" /><br/>
+    <input type="hidden" name="id" value="{{ todo['id'] }}" />
+    <input type="text" name="todo" value="{{ todo['todo'] }}" /><br/>
     <input type="submit" value="更新"></button>
 </form>
 {% endblock %}
