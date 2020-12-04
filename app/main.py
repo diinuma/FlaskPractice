@@ -31,7 +31,7 @@ def todo_list():
 def todo_add():
     return render_template('add.html', title='TODOアプリ')
 
-@app.route('/', methods=['POST'])
+@app.route('/add', methods=['POST'])
 def add():
     with pg.connect(**DATABASE) as connection, \
          connection.cursor() as cursor:
@@ -42,6 +42,44 @@ def add():
         """
 
         params = {
+            'todo':todo
+        }
+        cursor.execute(sql, params)
+
+    return redirect(url_for('todo_list'))
+
+@app.route('/edit/<id>')
+def todo_edit(id=None):
+    with pg.connect(**DATABASE) as connection, \
+        connection.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+        sql = """
+            select * 
+            from todo
+            where id = %(id)s
+        """
+        params = {
+            'id':id
+        }
+        cursor.execute(sql, params)
+        todos = cursor.fetchall()
+    print(todos)
+    return render_template('edit.html', title='TODOアプリ', todos=todos)
+
+@app.route('/edit', methods=['POST'])
+def edit():
+    with pg.connect(**DATABASE) as connection, \
+         connection.cursor() as cursor:
+
+        id = request.form['id']
+        todo = request.form['todo']
+        sql = """
+            update todo 
+            set todo = %(todo)s
+            where id = %(id)s 
+        """
+
+        params = {
+            'id':id,
             'todo':todo
         }
         cursor.execute(sql, params)
