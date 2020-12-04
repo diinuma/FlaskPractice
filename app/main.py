@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 import psycopg2 as pg
 import psycopg2.extras
 
@@ -33,6 +33,19 @@ def todo_add():
 
 @app.route('/', methods=['POST'])
 def add():
+    with pg.connect(**DATABASE) as connection, \
+         connection.cursor() as cursor:
+
+        todo = request.form["todo"]
+        sql = """
+            insert into todo values(%(todo)s)
+        """
+
+        params = {
+            'todo':todo
+        }
+        cursor.execute(sql, params)
+
     return redirect(url_for('todo_list'))
 
 """
