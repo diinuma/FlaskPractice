@@ -38,7 +38,7 @@ def add():
 
         todo = request.form["todo"]
         sql = """
-            insert into todo values(%(todo)s)
+            insert into todo(todo) values(%(todo)s)
         """
 
         params = {
@@ -81,6 +81,23 @@ def edit():
         params = {
             'id':id,
             'todo':todo
+        }
+        cursor.execute(sql, params)
+
+    return redirect(url_for('todo_list'))
+
+@app.route('/<id>', methods=['POST'])
+def delete(id=None):
+    with pg.connect(**DATABASE) as connection, \
+         connection.cursor() as cursor:
+
+        sql = """
+            delete from todo
+            where id = %(id)s 
+        """
+
+        params = {
+            'id':id
         }
         cursor.execute(sql, params)
 
